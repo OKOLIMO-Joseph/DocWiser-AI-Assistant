@@ -1,0 +1,133 @@
+.file-upload-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.upload-section {
+  margin-bottom: 30px;
+}
+
+.dropzone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.dropzone:hover {
+  border-color: #667eea;
+  background-color: #f0f0f0;
+}
+
+.dropzone.active {
+  border-color: #667eea;
+  background-color: #e8eaff;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.dropzone small {
+  color: #999;
+  font-size: 12px;
+}
+
+.file-info {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.file-info p {
+  margin: 5px 0;
+  color: #333;
+}
+
+.upload-button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover:not(:disabled) {
+  background-color: #5a67d8;
+}
+
+.upload-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  padding: 15px;
+  background-color: #fee;
+  border-left: 4px solid #f44;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  color: #c33;
+}
+
+.result-section {
+  margin-top: 30px;
+}
+
+.result-section h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.result-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-item {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.result-item:last-child {
+  border-bottom: none;
+}
+
+.result-item strong {
+  display: block;
+  color: #667eea;
+  font-size: 14px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.result-item p {
+  margin: 0;
+  line-height: 1.6;
+  color: #333;
+}
+
+.result-metadata {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+  text-align: center;
+  color: #999;
+  font-size: 12px;
+}
