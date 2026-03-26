@@ -36,7 +36,7 @@ const FileUpload = () => {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:8001/analyze', formData, {
+      const response = await axios.post('https://docwiser-backend.onrender.com/analyze', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
