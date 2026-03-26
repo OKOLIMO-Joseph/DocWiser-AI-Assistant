@@ -10,9 +10,9 @@ function App() {
         <div className="header-content">
           <div className="logo-title-container">
             <img src={logo} alt="DocWiser Logo" className="app-logo" />
-            <div className="title-container">
-              <h1>DocWiser AI Assistant</h1>
-              <p>Upload your documents and let AI analyze them</p>
+            <div className="title-wrapper">
+              <h1 className="app-title">DocWiser AI Assistant</h1>
+              <p className="header-subtitle">Upload your documents and let AI analyze them</p>
             </div>
           </div>
         </div>
