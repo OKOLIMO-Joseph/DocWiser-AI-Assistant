@@ -50,6 +50,7 @@
 .file-info p {
   margin: 5px 0;
   color: #333;
+  word-break: break-all;  /* Break long filenames */
 }
 
 .upload-button {
@@ -62,6 +63,7 @@
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+  width: auto;
 }
 
 .upload-button:hover:not(:disabled) {
@@ -80,6 +82,7 @@
   border-radius: 4px;
   margin-bottom: 20px;
   color: #c33;
+  word-break: break-word;
 }
 
 .result-section {
@@ -89,6 +92,7 @@
 .result-section h2 {
   color: #333;
   margin-bottom: 20px;
+  font-size: 1.5rem;
 }
 
 .result-card {
@@ -121,6 +125,7 @@
   margin: 0;
   line-height: 1.6;
   color: #333;
+  word-break: break-word;
 }
 
 .result-metadata {
@@ -130,4 +135,90 @@
   text-align: center;
   color: #999;
   font-size: 12px;
+  word-break: break-word;
+}
+
+/* Mobile Responsive for FileUpload */
+@media (max-width: 768px) {
+  .file-upload-container {
+    padding: 12px;
+  }
+  
+  .dropzone {
+    padding: 30px 20px;
+  }
+  
+  .dropzone p {
+    font-size: 14px;
+  }
+  
+  .dropzone small {
+    font-size: 11px;
+  }
+  
+  .file-info {
+    padding: 12px;
+  }
+  
+  .file-info p {
+    font-size: 13px;
+  }
+  
+  .upload-button {
+    padding: 8px 16px;
+    font-size: 14px;
+    width: 100%;  /* Full width button on mobile */
+  }
+  
+  .result-section h2 {
+    font-size: 1.3rem;
+  }
+  
+  .result-card {
+    padding: 15px;
+  }
+  
+  .result-item strong {
+    font-size: 12px;
+  }
+  
+  .result-item p {
+    font-size: 14px;
+  }
+  
+  .result-metadata {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dropzone {
+    padding: 20px 15px;
+  }
+  
+  .dropzone p {
+    font-size: 12px;
+  }
+  
+  .file-info p {
+    font-size: 12px;
+  }
+  
+  .upload-button {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  
+  .result-section h2 {
+    font-size: 1.2rem;
+  }
+  
+  .result-item {
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+  }
+  
+  .result-item p {
+    font-size: 13px;
+  }
 }

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: docwiser-backend
+    runtime: python
+    repo: https://github.com/OKOLIMO-Joseph/docwiser-ai-assistant
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+    healthCheckPath: /health
+    autoDeploy: true

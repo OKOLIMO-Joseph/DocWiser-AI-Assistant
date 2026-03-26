@@ -38,3 +38,11 @@ An AI-powered document assistant that extracts text from PDF and Word documents,
 ```bash
 git clone https://github.com/OKOLIMO-Joseph/docwiser-ai-assistant.git
 cd docwiser-ai-assistant
+
+
+## Author
+
+**Okolimo Joseph**
+- GitHub: [@OKOLIMO-Joseph](https://github.com/OKOLIMO-Joseph)
+- LinkedIn: [Joseph Okolimo](https://www.linkedin.com/in/joseph-okolimo-4b24b12b0)
+- Email: okolimojoseph1@gmail.com

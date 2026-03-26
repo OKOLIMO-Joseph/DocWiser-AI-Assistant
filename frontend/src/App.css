@@ -127,7 +127,11 @@ body {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Responsive Design */
+/* ============================================ */
+/* ENHANCED MOBILE RESPONSIVE STYLES */
+/* ============================================ */
+
+/* Tablet Devices (768px and below) */
 @media (max-width: 768px) {
   .app-header {
     padding: 25px 20px;
@@ -135,19 +139,24 @@ body {
   
   .logo-title-container {
     gap: 20px;
+    flex-direction: column;  /* Stack logo above title on mobile */
   }
   
   .app-logo {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
   }
   
   .app-title {
-    font-size: 1.8rem;
+    font-size: 2rem;
   }
   
   .header-subtitle {
     font-size: 1rem;
+  }
+  
+  .app-main {
+    padding: 30px 15px;
   }
   
   .social-links {
@@ -159,9 +168,18 @@ body {
   .separator {
     display: none;
   }
+  
+  .creator-line {
+    font-size: 0.9rem;
+  }
 }
 
+/* Mobile Phones (480px and below) */
 @media (max-width: 480px) {
+  .app-header {
+    padding: 20px 15px;
+  }
+  
   .app-logo {
     width: 60px;
     height: 60px;
@@ -172,6 +190,47 @@ body {
   }
   
   .header-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+  }
+  
+  .app-main {
+    padding: 20px 12px;
+  }
+  
+  .app-footer {
+    padding: 15px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .creator-line {
+    font-size: 0.85rem;
+  }
+  
+  .social-links {
+    gap: 6px;
+  }
+  
+  .social-links a {
+    font-size: 0.85rem;
+  }
+}
+
+/* Very Small Phones (375px and below) */
+@media (max-width: 375px) {
+  .app-logo {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .app-title {
+    font-size: 1.3rem;
+  }
+  
+  .header-subtitle {
+    font-size: 0.8rem;
+  }
+  
+  .app-footer {
+    font-size: 0.75rem;
   }
 }
