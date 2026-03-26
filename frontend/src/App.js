@@ -1,5 +1,6 @@
 import React from 'react';
 import FileUpload from './components/FileUpload';
+import logo from './assets/docwiser-logo.png';
 import './App.css';
 
 function App() {
@@ -7,8 +8,13 @@ function App() {
     <div className="App">
       <header className="app-header">
         <div className="header-content">
-          <h1>📄 DocWiser AI Assistant</h1>
-          <p>Upload your documents and let AI analyze them</p>
+          <div className="logo-title-container">
+            <img src={logo} alt="DocWiser Logo" className="app-logo" />
+            <div className="title-container">
+              <h1>DocWiser AI Assistant</h1>
+              <p>Upload your documents and let AI analyze them</p>
+            </div>
+          </div>
         </div>
       </header>
       <main className="app-main">
