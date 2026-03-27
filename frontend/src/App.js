@@ -25,13 +25,6 @@ function App() {
           <p className="creator-line">
             Created with ❤️ by <strong>Okolimo Joseph</strong>
           </p>
-          <div className="social-links">
-            <a href="https://github.com/OKOLIMO-Joseph" target="_blank" rel="noopener noreferrer">GitHub</a>
-            <span className="separator">|</span>
-            <a href="https://www.linkedin.com/in/joseph-okolimo-4b24b12b0" target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            <span className="separator">|</span>
-            <span>okolimojoseph1@gmail.com</span>
-          </div>
           <p>Powered by Google Gemini AI | DocWiser © 2026</p>
         </div>
       </footer>
