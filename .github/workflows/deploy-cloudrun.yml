@@ -1,0 +1,282 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  PROJECT_ID: docwiser-project-491509
+  BACKEND_SERVICE: docwiser-backend
+  FRONTEND_SERVICE: docwiser-frontend
+  REGION: us-central1
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+
+  # JOB 1: Test Backend
+
+  test-backend:
+    name: Test Backend
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        pip install -r requirements.txt
+    
+    - name: Check Python syntax
+      run: |
+        cd backend
+        python -m py_compile app/*.py
+        echo " Python syntax check passed"
+    
+    - name: Test imports
+      run: |
+        cd backend
+        python -c "from app.document_parser import DocumentParser; print(' DocumentParser OK')"
+        python -c "from app.llm_service import LLMService; print(' LLMService OK')"
+    
+    - name: Backend tests passed
+      run: echo "All backend tests completed!"
+
+
+  # JOB 2: Test Frontend
+ 
+  test-frontend:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+    
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci || npm install
+    
+    - name: Build frontend
+      run: |
+        cd frontend
+        npm run build
+        echo " Frontend build successful"
+    
+    - name:  Frontend tests passed
+      run: echo "All frontend tests completed!"
+
+
+  # JOB 3: Build and Push Backend to Artifact Registry
+
+  build-backend:
+    name: Build & Push Backend
+    runs-on: ubuntu-latest
+    needs: [test-backend]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+    
+    - name: Build Backend Image
+      run: |
+        cd backend
+        docker build \
+          -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.BACKEND_SERVICE }}:latest \
+          -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.BACKEND_SERVICE }}:${{ github.sha }} \
+          .
+    
+    - name: Push Backend Image
+      run: |
+        docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.BACKEND_SERVICE }}:latest
+        docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+        echo " Backend images pushed"
+
+
+  # JOB 4: Build and Push Frontend to Artifact Registry
+
+  build-frontend:
+    name: Build & Push Frontend
+    runs-on: ubuntu-latest
+    needs: [test-frontend]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    
+    - name: 🔧 Configure Docker for Artifact Registry
+      run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+    
+    - name: Build Frontend Image
+      run: |
+        cd frontend
+        docker build \
+          -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.FRONTEND_SERVICE }}:latest \
+          -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.FRONTEND_SERVICE }}:${{ github.sha }} \
+          .
+    
+    - name: Push Frontend Image
+      run: |
+        docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.FRONTEND_SERVICE }}:latest
+        docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+        echo " Frontend images pushed"
+
+
+  # JOB 5: Deploy Backend to Cloud Run
+
+  deploy-backend:
+    name: Deploy Backend to Cloud Run
+    runs-on: ubuntu-latest
+    needs: build-backend
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Deploy Backend to Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v1
+      with:
+        service: ${{ env.BACKEND_SERVICE }}
+        image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+        region: ${{ env.REGION }}
+        flags: --allow-unauthenticated --memory=512Mi --timeout=60
+        env_vars: |
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+    
+    - name: Get Backend URL
+      run: |
+        BACKEND_URL=$(gcloud run services describe ${{ env.BACKEND_SERVICE }} \
+          --region ${{ env.REGION }} \
+          --format='value(status.url)')
+        echo "BACKEND_URL=$BACKEND_URL" >> $GITHUB_ENV
+        echo " Backend deployed to: $BACKEND_URL"
+
+
+  # JOB 6: Deploy Frontend to Cloud Run
+
+  deploy-frontend:
+    name: Deploy Frontend to Cloud Run
+    runs-on: ubuntu-latest
+    needs: build-frontend
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Deploy Frontend to Cloud Run
+      uses: google-github-actions/deploy-cloudrun@v1
+      with:
+        service: ${{ env.FRONTEND_SERVICE }}
+        image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/docwiser-images/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+        region: ${{ env.REGION }}
+        flags: --allow-unauthenticated --memory=256Mi
+    
+    - name: Get Frontend URL
+      run: |
+        FRONTEND_URL=$(gcloud run services describe ${{ env.FRONTEND_SERVICE }} \
+          --region ${{ env.REGION }} \
+          --format='value(status.url)')
+        echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
+        echo " Frontend deployed to: $FRONTEND_URL"
+
+ 
+  # JOB 7: Deployment Summary
+ 
+  summary:
+    name: Deployment Summary
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend, deploy-backend, deploy-frontend]
+    if: always()
+    
+    steps:
+    - name: Generate Summary
+      run: |
+        echo "## CI/CD Pipeline Results" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Stage | Status | Details |" >> $GITHUB_STEP_SUMMARY
+        echo "|-------|--------|---------|" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.test-backend.result }}" = "success" ]; then
+          echo "| Backend Tests | Passed | Python syntax and imports OK |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Backend Tests | Failed | Check logs for details |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.test-frontend.result }}" = "success" ]; then
+          echo "| Frontend Tests | Passed | Build successful |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Frontend Tests | Failed | Check build logs |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.deploy-backend.result }}" = "success" ]; then
+          echo "| Backend Deploy | Success | Live at: ${{ env.BACKEND_URL }} |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Backend Deploy | Skipped/Failed | Not on main branch |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.deploy-frontend.result }}" = "success" ]; then
+          echo "| Frontend Deploy | Success | Live at: ${{ env.FRONTEND_URL }} |" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "| Frontend Deploy | Skipped/Failed | Not on main branch |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Links" >> $GITHUB_STEP_SUMMARY
+        echo "- [View in Cloud Console](https://console.cloud.google.com/run)" >> $GITHUB_STEP_SUMMARY
+        echo "- [GitHub Actions](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
