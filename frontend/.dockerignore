@@ -1,0 +1,10 @@
+node_modules/
+build/
+.git/
+.gitignore
+.env
+*.log
+.DS_Store
+*.md
+!README.md
+.vercel/
