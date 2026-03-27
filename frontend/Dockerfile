@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (use npm install instead of ci)
+# Install dependencies
 RUN npm install
 
 # Copy source code
@@ -21,11 +21,11 @@ FROM nginx:alpine
 # Copy built files to nginx
 COPY --from=builder /app/build /usr/share/nginx/html
 
-# Copy custom nginx config if exists
+# Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
-EXPOSE 80
+# Expose port 8080 for Cloud Run - THIS MUST BE 8080
+EXPOSE 8080
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]

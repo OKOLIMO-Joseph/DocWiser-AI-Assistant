@@ -9,6 +9,12 @@ const FileUpload = () => {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
+  // Backend URLs - both working
+  const BACKEND_URLS = [
+    'https://docwiser-backend-875768844875.us-central1.run.app',  // Cloud Run (Primary)
+    'https://docwiser-backend.onrender.com'                       // Render (Fallback)
+  ];
+
   const onDrop = useCallback((acceptedFiles) => {
     setFile(acceptedFiles[0]);
     setError(null);
@@ -35,19 +41,28 @@ const FileUpload = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-    try {
-      const response = await axios.post('https://docwiser-backend.onrender.com/analyze', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+    // Try each backend URL until one works
+    for (const backendUrl of BACKEND_URLS) {
+      try {
+        const response = await axios.post(`${backendUrl}/analyze`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 30000, // 30 second timeout
+        });
 
-      setResult(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err.response?.data?.detail || 'An error occurred while processing your document');
-      setLoading(false);
+        setResult(response.data);
+        setLoading(false);
+        return; // Success, exit the function
+      } catch (err) {
+        console.log(`Failed to connect to ${backendUrl}:`, err.message);
+        // Continue to try next backend
+      }
     }
+
+    // If all backends fail
+    setError('Unable to connect to the analysis service. Please try again later.');
+    setLoading(false);
   };
 
   return (
