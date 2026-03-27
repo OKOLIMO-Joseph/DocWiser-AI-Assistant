@@ -1,48 +1,58 @@
-# DocWiser AI Assistant
+# 📄 DocWiser AI Assistant
 
 An AI-powered document assistant that extracts text from PDF and Word documents, then uses Google's Gemini AI to generate summaries and extract key information like titles and authors.
 
+## Live Demo
+
+| Service | URL |
+|---------|-----|
+| **Frontend** | [docwiser-frontend-875768844875.us-central1.run.app](https://docwiser-frontend-875768844875.us-central1.run.app) |
+| **Backend API** | [docwiser-backend-875768844875.us-central1.run.app](https://docwiser-backend-875768844875.us-central1.run.app) |
+| **API Docs** | [docwiser-backend-875768844875.us-central1.run.app/docs](https://docwiser-backend-875768844875.us-central1.run.app/docs) |
+
 ## Features
 
-- **Document Upload**: Support for PDF and DOCX files
-- **Text Extraction**: Automatically extracts text from uploaded documents
-- **AI Analysis**: Uses Google Gemini AI to:
-  - Extract document title
-  - Identify author information
-  - Generate concise summaries
-- **Clean Interface**: Modern, responsive web interface
-- **Real-time Processing**: Instant analysis with loading states
+- 📁 Upload PDF and Word documents
+- 📝 Automatically extracts text from documents
+- 🤖 Uses Google Gemini AI to identify title, author, and summary
+- 🎨 Clean, responsive web interface with drag-and-drop
+- ⚡ Real-time analysis with loading states
+- 🐳 Docker containerization for easy deployment
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-### Backend
-- **FastAPI**: Python web framework
-- **Google Gemini AI**: LLM for document analysis
-- **PyPDF2 & python-docx**: Document parsing
-- **Uvicorn**: ASGI server
-
-### Frontend
-- **React**: UI framework
-- **Axios**: HTTP client
-- **React Dropzone**: File upload handling
+| Component | Technology |
+|-----------|------------|
+| Frontend | React.js |
+| Backend | FastAPI (Python) |
+| AI/LLM | Google Gemini AI |
+| Document Parsing | PyPDF2, python-docx |
+| Deployment | Google Cloud Run, Docker |
 
 ## Prerequisites
 
 - Python 3.9+
 - Node.js 16+
-- Google Gemini API Key
+- Google Gemini API Key ([Get it here](https://aistudio.google.com/app/apikey))
 
-## Getting Started
+## How to Run the Project
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/OKOLIMO-Joseph/docwiser-ai-assistant.git
-cd docwiser-ai-assistant
+git clone https://github.com/OKOLIMO-Joseph/DocWiser-AI-Assistant.git
+cd DocWiser-AI-Assistant
 
 
-## Author
 
-**Okolimo Joseph**
-- GitHub: [@OKOLIMO-Joseph](https://github.com/OKOLIMO-Joseph)
-- LinkedIn: [Joseph Okolimo](https://www.linkedin.com/in/joseph-okolimo-4b24b12b0)
-- Email: okolimojoseph1@gmail.com
+#Running the Backend
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+echo GEMINI_API_KEY=your_api_key_here > .env
+python run.py
+
+#Running Frontend
+cd frontend
+npm install
+npm start
